@@ -1,18 +1,22 @@
 import express from 'express';
-import { createServer } from "http";
 import { Server } from "socket.io";
-import bootstrap from './src/app.controller.js';
-import path from "path";
 import dotenv from "dotenv";
+import path from "path";
+import bootstrap from './src/app.controller.js';
 import { eventEmitter } from "./src/utils/index.js";
 
 dotenv.config({ path: path.resolve("config/.env") });
 
 const app = express();
+const port = process.env.PORT || 3000;
+
+const server = app.listen(port, () => {
+    console.log(`Server running on port ${port}!`);
+});
+
 bootstrap(app, express);
 
-const httpServer = createServer(app);
-export const io = new Server(httpServer, {
+export const io = new Server(server, {
     cors: { origin: "*" },
 });
 
@@ -34,6 +38,7 @@ io.on("connection", (socket) => {
     });
 });
 
+// Handle EventEmitter events
 eventEmitter.on("newApplication", (data) => {
     io.to(`company-${data.companyId}`).emit("newApplication", {
         message: `New application submitted for job ${data.jobId}`,
@@ -42,9 +47,4 @@ eventEmitter.on("newApplication", (data) => {
         timestamp: data.timestamp
     });
     console.log(`Emitted newApplication event to company-${data.companyId}`);
-});
-
-const port = process.env.PORT || 3000;
-httpServer.listen(port, () => {
-    console.log(`Server running on port ${port}`);
 });

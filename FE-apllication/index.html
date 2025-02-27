@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Notification</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>HR Notification</h1>
+        <div id="company-form">
+            <label for="companyId">Enter Company ID:</label>
+            <input type="text" id="companyId" placeholder="e.g., 67be1f52a28379667db485ef">
+            <button type="button" onclick="joinCompany()">Join Company</button>
+        </div>
+        <div id="status">Disconnected</div>
+        <div id="notifications"></div>
+    </div>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

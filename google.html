@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Login</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f3f4f6;
+        }
+
+        #login-container {
+            text-align: center;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="login-container">
+        <h1>Sign in with Google</h1>
+        <div id="google-signin-button"></div>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        const GOOGLE_CLIENT_ID = "70167985995-2lg1u9574p2hf1b7araj0bhi3ijq76rp.apps.googleusercontent.com";
+
+        const loginWithGoogle = async (googleToken) => {
+            try {
+                const response = await fetch("http://localhost:3000/users/auth/google-auth/callback", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ googleToken }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById("status").innerText = "Login successful!";
+                    localStorage.setItem("token", data.token);
+                    console.log("Login successful:", data);
+                } else {
+                    document.getElementById("status").innerText = "Login failed: " + data.msg;
+                    console.error("Login failed:", data.msg);
+                }
+            } catch (error) {
+                document.getElementById("status").innerText = "An error occurred during login.";
+                console.error("Error:", error);
+            }
+        };
+
+        // Initialize Google Sign-In
+        function initializeGoogleSignIn() {
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleGoogleSignIn,
+                ux_mode: "redirect",
+                redirect_uri: "https://127.0.0.1:5500",
+            });
+
+            google.accounts.id.renderButton(
+                document.getElementById("google-signin-button"),
+                { theme: "outline", size: "large" }
+            );
+        }
+
+        // Handle the Google Sign-In response
+        function handleGoogleSignIn(response) {
+            const googleToken = response.credential;
+            console.log("Google Token:", googleToken);
+            loginWithGoogle(googleToken);
+        }
+
+        // Load Google Sign-In on page load
+        window.onload = initializeGoogleSignIn;
+    </script>
+</body>
+
+</html>

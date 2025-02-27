@@ -1,4 +1,4 @@
-import { io } from '../../../index.js';
+import { io } from '../../../socketServer.js';
 import { asyncHandler } from '../../utils/index.js';
 import * as chatService from './chat.service.js';
 
